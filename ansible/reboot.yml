@@ -1,7 +1,0 @@
----
-- hosts: laravelmachines
-  remote_user: root
-  
-  tasks:
-   - name: Rebooting server
-     reboot:
