@@ -1,0 +1,13 @@
+<VirtualHost *:{{ http_port }}>
+ServerAdmin {{ admin_email }}
+ServerName {{ http_host }}
+ServerAlias www.{{ http_host }}
+DocumentRoot "/var/www/html/{{ project_name }}"
+
+<directory /var/www/html/{{ project_name }}>
+Options +FollowSymLinks
+AllowOverride All
+Require all granted
+</directory>
+
+</VirtualHost>

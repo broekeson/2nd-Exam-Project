@@ -1,0 +1,48 @@
+---
+- include_vars: files/vars.yml
+
+- name: set up Apache virtualhost
+  ansible.builtin.template:
+    src: "files/apache.conf.j2"
+    dest: "/etc/apache2/sites-available/{{ http_conf }}"
+
+- name: disable default Apache site
+  shell: /usr/sbin/a2dissite 000-default.conf 
+  when: disable_default
+
+- name: restart Apache
+  service:
+    name: apache2
+    state: restarted
+
+- name: enable new site
+  shell: /usr/sbin/a2ensite {{ http_conf }}
+
+- name: restart Apache
+  service:
+    name: apache2
+    state: restarted
+
+- name: enable ufw and allow http and https
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+    state: enabled
+  with_items:
+    - 80
+    - 443
+    - 22
+
+- name: ufw allow full www
+  ufw:
+    rule: allow
+    name: "WWW Full"
+    state: enabled
+    
+- name: reload Apache
+  service:
+    name: apache2
+    state: reloaded
+
+- include_tasks: env.yml

@@ -1,0 +1,20 @@
+---
+- name: Transfer and execute a script
+  hosts: all
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: transfer script
+      copy:
+        src: files/postgree_db.sh
+        dest: /tmp/script.sh
+        mode: 0755
+    - name: execute script
+      shell: /tmp/script.sh
+      args:
+        executable: /bin/bash
+    - name: remove script
+      file:
+        path: /tmp/script.sh
+        state: absent

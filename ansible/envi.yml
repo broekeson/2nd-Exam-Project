@@ -1,0 +1,25 @@
+---
+include_vars: /files/vars.yml
+
+vars:
+  - key: APP_NAME
+    value: "{{ project_name }}"
+  - key: APP_URL
+    value: "{{ http_host }}"
+  - key: DB_CONNECTION
+    value: "{{ db_type }}"
+  - key: DB_DATABASE
+    value: "{{ db_name }}"
+  - key: DB_USERNAME
+    value: "{{ db_user }}"
+  - key: DB_PASSWORD
+    value: "{{ db_pass }}"
+
+tasks:
+- name: editing .env file
+  lineinfile:
+      path: /var/www/html/{{ project_name }}/.env
+      regexp: '^{{ item.key }}='
+      line: '{{ item.key }}={{ item.value }}'
+  with_items:
+    - clea

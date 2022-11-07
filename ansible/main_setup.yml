@@ -1,0 +1,115 @@
+---
+- name: Laravel Setup
+  hosts: laravelmachines
+  remote_user: root
+
+tasks:
+- name: update apt
+  apt: update_cache=yes
+
+- name: upgrade all packages
+  apt: upgrade=dist force_apt_get=yes
+
+- name: Install all required packages
+  apt: name={{ item }} state=latest
+  with_items:
+    - git
+    - wget
+    - mysql-server
+  
+- name: add sury repo
+  apt
+   name: lsb-release apt-transport-https ca-certificates
+    state: present
+
+- name:  shell command to add repo
+  shell: wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+
+- name: command to add repo
+  shell: echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
+
+- name: update apt
+  apt: update_cache=yes
+
+- name: upgrade all packages
+  apt: upgrade=dist force_apt_get=yes
+
+- name: Install PHP and dependencies
+  apt: name={{ item }} state=latest
+  with_items:
+  - php8.1
+  - php8.1-mysql
+  - php8.1-xml
+  - php8.1-mbstring
+  - php8.1-curl
+  - php8.1-zip
+  - libapache2-mod-php8.1
+  - php8.1-common
+  - php8.1-xmlrpc
+  - php8.1-gd
+  - php8.1-imagick
+  - php8.1-cli
+  - php8.1-dev
+  - php8.1-imap
+  - php8.1-mbstring
+  - php8.1-opcache
+  - php8.1-soap
+  - php8.1
+
+- name: start mariadb & enable on boot
+  service:
+    name: mariadb
+    state: started
+
+- name: create database and user
+  mysql_db:
+    name: laravel
+    state: present
+
+- name: log in and create mariadb, user, grant all privileges and flush privileges
+  mysql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_user: root
+    login_password:
+  with_items:
+    - { name: 'laravel', password: 'laravel' }
+
+- name: install composer
+  shell: curl -sS https://getcomposer.org/installer | php
+
+- name: move composer to /usr/local/bin
+  shell: mv composer.phar /usr/local/bin/composer
+
+- name: assign permissions to composer
+  shell: chmod +x /usr/local/bin/composer
+
+- name: add laravel from github
+  shell: git clone https://github.com/f1amy/laravel-realworld-example-app.git 
+
+- name: move laravel to /var/www/html
+  shell: mv laravel-realworld-example-app /var/www/html/project
+
+- name: cd into project
+  shell: cd /var/www/html/project && composer install
+
+- name: change permissions
+  shell: chown -R www-data:www-data /var/www/html/project && chmod -R 755 /var/www/html/project/storage
+
+- name: copy .env.example to .env
+  shell: cp /var/www/html/project/.env.example /var/www/html/project/.env
+
+- name: install ufw
+  apt: name=ufw state=present
+
+- name: enable ufw and allow http and https
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+    state: enabled
+  with_items:
+    - 80
+    - 443

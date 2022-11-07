@@ -1,0 +1,15 @@
+---
+- include_vars: files/vars.yml
+
+- name: install certbot
+  apt:
+    name: certbot
+    state: present
+
+- name: install python3-certbot-apache
+  apt:
+    name: python3-certbot-apache
+    state: present
+
+- name: install certbot
+  shell: certbot --apache -d {{ http_host }} -m {{ admin_email }} --agree-tos --redirect
