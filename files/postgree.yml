@@ -7,7 +7,7 @@
   tasks:
     - name: transfer script
       copy:
-        src: files/postgree_db.sh
+        src:  postgresql.sh
         dest: /tmp/script.sh
         mode: 0755
     - name: execute script
