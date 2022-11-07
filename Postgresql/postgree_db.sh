@@ -12,6 +12,8 @@ apt-get update
 apt-get install postgresql postgresql-contrib -y
 
 # Switch to root directory
+cd ~
+
 cd /
 
 # Create a new user from the command line by a root user

@@ -11,10 +11,4 @@
         dest: /tmp/script.sh
         mode: 0755
     - name: execute script
-      shell: /tmp/script.sh
-      args:
-        executable: /bin/bash
-    - name: remove script
-      file:
-        path: /tmp/script.sh
-        state: absent
+      shell: sh /tmp/script.sh
