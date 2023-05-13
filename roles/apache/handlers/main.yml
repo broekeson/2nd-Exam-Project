@@ -8,8 +8,10 @@
   service:
     name: "{{ apache_service }}"
     state: started
+  notify: enable webserver
 
 - name: enable webserver
   service:
     name: "{{ apache_service }}"
     state: enabled
+  notify: restart webserver
