@@ -12,4 +12,4 @@
   package:
     name: "{{ apache_packages }}"
     state: present
-  notify: restart webserver
+  notify: start webserver
