@@ -1,0 +1,15 @@
+---
+- name: restart webserver
+  service:
+    name: "{{ apache_service }}"
+    state: restarted
+
+- name: start webserver
+  service:
+    name: "{{ apache_service }}"
+    state: started
+
+- name: enable webserver
+  service:
+    name: "{{ apache_service }}"
+    state: enabled

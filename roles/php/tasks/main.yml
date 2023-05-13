@@ -1,0 +1,96 @@
+---
+#Add the necessary dependencies for PHP
+- name: Install ca-certificates, apt-transport-https and software-properties-common
+  package:
+    name: "{{ item }}" 
+    state: latest
+  with_items:
+    - ca-certificates
+    - apt-transport-https
+    - software-properties-common
+  when: ansible_os_family == 'Debian'
+
+#Add the GPG key for Debian/Ubuntu
+- name: Add GPG key for Debian/Ubuntu
+  apt_key:
+    url: https://packages.sury.org/php/apt.gpg
+    state: present
+  when: ansible_os_family == 'Debian'
+
+#Add sury repository for PHP on Debian/Ubuntu
+- name: Add sury repository for PHP on Debian/Ubuntu
+  apt_repository:
+    repo: deb https://packages.sury.org/php/ {{ ansible_distribution_release }} main
+    state: present
+  when: ansible_os_family == 'Debian'
+
+#Update for debian
+- name: Update for debian
+  apt: update_cache=yes
+  when: ansible_os_family == 'Debian'
+
+#Install PHP and dependencies
+- name: Install PHP and dependencies
+  package:
+    name: "{{ item }}" 
+    state: present
+  with_items:
+    - php8.1
+    - php8.1-mysql
+    - php8.1-xml
+    - php8.1-mbstring
+    - php8.1-curl
+    - php8.1-zip
+    - libapache2-mod-php8.1
+    - php8.1-common
+    - php8.1-xmlrpc
+  notify: restart webserver
+  when: ansible_os_family == 'Debian'
+
+  #Update for centos
+- name: Update for centos
+  yum: update_cache=yes
+  when: ansible_os_family == 'RedHat'
+
+#Install utils for CentOS
+- name: Install epel-release yum-utils
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - epel-release
+    - yum-utils
+  when: ansible_os_family == 'RedHat'
+
+#Install Remi repository for CentOS
+- name: Install Remi repository for CentOS
+  yum_repository:
+    name: remi
+    description: Remi PHP packages
+    baseurl: http://rpms.remirepo.net/enterprise/{{ ansible_distribution_major_version }}/remi/$basearch/
+    gpgcheck: yes
+    gpgkey: https://rpms.remirepo.net/RPM-GPG-KEY-remi
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+#Install PHP and dependencies for CentOS
+- name: Install PHP
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - php
+  - php-common
+  - php-cli
+  - php-mysqlnd
+  - php-xml
+  - php-mbstring
+  - php-curl
+  - php-fpm
+  - php-mysqli
+  - php-zip
+  - php-gd
+  - php-xmlrpc
+  notify: restart webserver
+  when: ansible_os_family == 'RedHat'
+

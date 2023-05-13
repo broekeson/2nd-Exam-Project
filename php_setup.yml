@@ -1,21 +1,53 @@
 ---
-- name: add sury repo
-  shell: apt-get install ca-certificates apt-transport-https software-properties-common -y
+- name: Install ca-certificates, apt-transport-https and software-properties-common
+  package:
+    name: "{{ item }}" 
+    state: latest
+    with_items:
+      - ca-certificates
+      - apt-transport-https
+      - software-properties-common
 
-- name:  shell command to add repo
-  shell: wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+- name: Add GPG key for Debian/Ubuntu
+  apt_key:
+    url: https://packages.sury.org/php/apt.gpg
+    state: present
+  when: ansible_os_family == 'Debian'
 
-- name: command to add repo
-  shell: echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
+- name: Add GPG key for CentOS
+  rpm_key:
+    key: https://packages.sury.org/php/apt.gpg
+    state: present
+  when: ansible_os_family == 'RedHat'
 
-- name: update apt
+- name: Add sury repository for PHP on Debian/Ubuntu
+  apt_repository:
+    repo: deb https://packages.sury.org/php/ {{ ansible_distribution_release }} main
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: Add sury repository for PHP on CentOS
+  yum_repository:
+    name: sury
+    description: Sury PHP packages
+    baseurl: https://packages.sury.org/php/ {{ ansible_distribution_release }} main
+    gpgcheck: yes
+    gpgkey: https://packages.sury.org/php/apt.gpg
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: Update for debian
   apt: update_cache=yes
+  when: ansible_os_family == 'Debian'
 
-- name: upgrade all packages
-  apt: upgrade=dist force_apt_get=yes
+- name: Update for centos
+  yum: update_cache=yes
+  when: ansible_os_family == 'RedHat'
 
 - name: Install PHP and dependencies
-  apt: name={{ item }} state=latest
+  package:
+    name: "{{ item }}" 
+    state: present
   with_items:
     - php8.1
     - php8.1-mysql

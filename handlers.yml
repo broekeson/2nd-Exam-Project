@@ -1,0 +1,16 @@
+---
+- handlers:
+  - name: start apache
+    service:
+      name: "{{ apache_service }}"
+      state: started
+
+  - name: start mariadb
+    service:
+      name: mariadb
+      state: started
+
+  - name: restart apache
+    service:
+      name: "{{ apache_service }}"
+      state: restarted
