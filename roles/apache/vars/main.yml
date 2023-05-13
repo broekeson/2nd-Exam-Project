@@ -1,0 +1,4 @@
+---
+apache_packages: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd'}}"
+apache_service: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd'}}"
+apache_config_file: "{{ '/etc/httpd/conf.d/' if ansible_os_family == 'RedHat' else '/etc/apache2/sites-available/' }}"

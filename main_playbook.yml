@@ -3,25 +3,9 @@
   hosts: laravelmachines
   become: yes
 
-  tasks:
-  - name: update apt
-    apt: update_cache=yes
-
-  - name: upgrade all packages
-    apt: upgrade=dist force_apt_get=yes
-
-  - name: Install all required packages
-    apt: name={{ item }} state=latest
-    with_items:
-      - apache2
-      - git
-      - wget
-      - mariadb-server
-      - mariadb-client
-      - ufw
-      - curl
-      - certbot
-      - python3-certbot-apache
+  roles:
+    - packages
+    - apache
+    - php
 
   - include_tasks: service.yml
-

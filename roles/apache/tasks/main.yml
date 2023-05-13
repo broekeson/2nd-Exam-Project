@@ -1,0 +1,15 @@
+---
+#Install Apache and dependencies for Debian/Ubuntu & RedHat/CentOS
+- name: update cache
+  apt: update_cache=yes
+  when: ansible_os_family == 'Debian'
+
+- name: Update for centos
+  yum: update_cache=yes
+  when: ansible_os_family == 'RedHat'
+
+- name: Install Apache for RedHat/CentOS
+  package:
+    name: "{{ apache_packages }}"
+    state: present
+  notify: restart webserver
