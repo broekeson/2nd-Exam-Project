@@ -1,0 +1,52 @@
+---
+#Update for debian
+- name: Update for debian
+  apt: update_cache=yes
+  when: ansible_os_family == 'Debian'
+
+  #Update for centos
+- name: Update for centos
+  yum: update_cache=yes
+  when: ansible_os_family == 'RedHat'
+
+#Install utils for CentOS
+- name: Install epel-release yum-utils
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - epel-release
+    - yum-utils
+  when: ansible_os_family == 'RedHat'
+
+#Install mysql
+- name: Install mysql
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - mysql-server
+    - mysql-client
+    - python3-mysqldb
+    - libmysqlclient-dev
+  notify: start mysql
+
+#Create database and user
+- name: create database.
+  mysql_db:
+    name: "{{ db_name }}"
+    state: present
+  
+#Create user
+- name: create user.
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_pass }}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_user: root
+    login_password:
+    
+
+
+

@@ -1,0 +1,5 @@
+---
+db_name: "exam_db"
+db_user: "exam_user"
+db_pass: "exam"
+db_type: "mysql"

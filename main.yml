@@ -1,11 +1,9 @@
 ---
 - name: Laravel Setup
-  hosts: laravelmachines
+  hosts: all
   become: yes
 
   roles:
     - packages
     - apache
     - php
-
-  - include_tasks: service.yml
