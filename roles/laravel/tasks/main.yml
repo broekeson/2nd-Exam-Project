@@ -1,0 +1,65 @@
+---
+#Install composer
+- name: install composer
+  shell: curl -sS https://getcomposer.org/installer | php
+
+- name: move composer to /usr/local/bin.
+  shell: mv composer.phar /usr/local/bin/composer
+
+- name: assign permissions to composer
+  shell: chmod +x /usr/local/bin/composer
+
+#Clone laravel
+- name: add laravel from github
+  shell: git clone https://github.com/f1amy/laravel-realworld-example-app.git {{ project_name }}/
+
+- name: composer install
+  shell: composer install
+  become: true
+  become_user: "{{app_user}}"
+  become_method: sudo
+  args:
+    chdir: "/{{project_name}}"
+
+- name: change permissions
+  shell: chown -R {{ app_user }}:{{ app_user }} /{{ project_name }} && chmod -R 755 /{{ project_name }}/storage
+
+#Copy .env and .htaccess files
+- name: copy .env file
+  copy:
+    src: files/.env
+    dest: "/{{ project_name }}/.env"
+
+- name: copy .htaccess file
+  copy:
+    src: files/.htaccess
+    dest: "/{{ project_name }}/.htaccess"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: 0644
+  notify: restart webserver
+
+#seeding
+- name: seeding
+  shell: cd /var/www/html/{{project_name}} && php artisan migrate --seed
+  become: true
+  become_user: "{{app_user}}"
+  become_method: sudo
+
+- name: migrate reset
+  shell: php artisan migrate:reset
+  args:
+    chdir: "/{{ project_name }}"
+
+- name: migrate refresh
+  shell: php artisan migrate:refresh
+  args:
+    chdir: "/{{ project_name }}"
+
+- name: migrate refresh
+  shell: php artisan migrate:refresh --seed
+  args:
+    chdir: "/{{ project_name }}"
+
+- name: move laravel to /var/www/
+  shell: mv {{ project_name }} /var/www/html/{{ project_name }}

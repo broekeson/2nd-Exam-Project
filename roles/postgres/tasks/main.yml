@@ -1,0 +1,9 @@
+---
+- name: transfer script
+  copy:
+    src:  files/postgres.sh
+    dest: /tmp/script.sh
+    mode: 0755
+
+- name: execute script
+  shell: sh /tmp/script.sh

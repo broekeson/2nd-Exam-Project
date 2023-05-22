@@ -1,0 +1,11 @@
+---
+#Install cerbot
+- name: install certbot & python3
+  package:
+  state: present
+  with_items: 
+  - certbot
+  - python3-certbot-apache
+
+- name: install cert on domain
+  shell: certbot --apache -d {{ http_host }} -m {{ admin_email }} --agree-tos --redirect

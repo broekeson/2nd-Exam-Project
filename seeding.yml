@@ -1,8 +1,0 @@
----
-- name: seeding
-  shell: cd /var/www/html/{{project_name}} && php artisan migrate --seed
-  become: true
-  become_user: "{{app_user}}"
-  become_method: sudo
-
-- include_tasks: migration_seeding.yml

@@ -13,3 +13,48 @@
     name: "{{ apache_packages }}"
     state: present
   notify: start webserver
+
+- name: set-up virtualhost
+  ansible.builtin.template:
+    src: "files/apache.conf.j2"
+    dest: "{{ apache_config_file }}{{ http_conf }}"
+  notify: restart webserver
+  when: ansible_os_family == 'Debian'
+
+- name: set-up virtualhost
+  ansible.builtin.template:
+    src: "files/apache.conf.j2"
+    dest: "{{ apache_config_file }}{{ http_conf }}"
+  notify: restart webserver
+  when: ansible_os_family == 'RedHat'
+
+- name: disable default Apache site
+  shell: /usr/sbin/a2dissite 000-default.conf 
+  when: 
+    - disable_default
+    - ansible_os_family == 'Debian'
+  notify: restart webserver
+
+- name: enable new site
+  shell: /usr/sbin/a2ensite {{ http_conf }}
+  when: ansible_os_family == 'Debian'
+  notify: restart webserver
+
+- name: enable ufw and allow http and https
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+    state: enabled
+  with_items:
+    - 80
+    - 443
+    - 22
+  notify: restart webserver
+
+- name: ufw allow full www
+  ufw:
+    rule: allow
+    name: "WWW Full"
+    state: enabled
+  notify: restart webserver
