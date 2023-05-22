@@ -17,5 +17,3 @@
     - wget
     - ufw
     - curl
-    - certbot
-    - python3-certbot-apache

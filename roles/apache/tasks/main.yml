@@ -8,25 +8,17 @@
   yum: update_cache=yes
   when: ansible_os_family == 'RedHat'
 
-- name: Install Apache for RedHat/CentOS
+- name: Install Apache for RedHat/Debian
   package:
     name: "{{ apache_packages }}"
     state: present
   notify: start webserver
 
-- name: set-up virtualhost
+- name: set-up virtualhost (Redhat/Debian)
   ansible.builtin.template:
     src: "templates/apache.conf.j2"
     dest: "{{ apache_config_file }}{{ http_conf }}"
   notify: restart webserver
-  when: ansible_os_family == 'Debian'
-
-- name: set-up virtualhost
-  ansible.builtin.template:
-    src: "templates/apache.conf.j2"
-    dest: "{{ apache_config_file }}{{ http_conf }}"
-  notify: restart webserver
-  when: ansible_os_family == 'RedHat'
 
 - name: disable default Apache site
   shell: /usr/sbin/a2dissite 000-default.conf 
