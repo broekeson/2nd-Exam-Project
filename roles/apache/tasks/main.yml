@@ -43,10 +43,3 @@
     - 443
     - 22
   notify: restart webserver
-
-- name: ufw allow full www
-  ufw:
-    rule: allow
-    name: "WWW Full"
-    state: enabled
-  notify: restart webserver
