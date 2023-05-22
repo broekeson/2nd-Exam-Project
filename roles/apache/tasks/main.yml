@@ -16,14 +16,14 @@
 
 - name: set-up virtualhost
   ansible.builtin.template:
-    src: "files/apache.conf.j2"
+    src: "templates/apache.conf.j2"
     dest: "{{ apache_config_file }}{{ http_conf }}"
   notify: restart webserver
   when: ansible_os_family == 'Debian'
 
 - name: set-up virtualhost
   ansible.builtin.template:
-    src: "files/apache.conf.j2"
+    src: "templates/apache.conf.j2"
     dest: "{{ apache_config_file }}{{ http_conf }}"
   notify: restart webserver
   when: ansible_os_family == 'RedHat'
