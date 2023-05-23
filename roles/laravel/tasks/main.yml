@@ -12,6 +12,9 @@
 #Clone laravel
 - name: add laravel from github
   shell: git clone https://github.com/f1amy/laravel-realworld-example-app.git {{ project_name }}/
+  become: true
+  become_user: "{{app_user}}"
+  become_method: sudo
 
 - name: composer install
   shell: composer install
@@ -19,7 +22,7 @@
   become_user: "{{app_user}}"
   become_method: sudo
   args:
-    chdir: "/{{project_name}}"
+    chdir: "{{project_name}}"
 
 - name: change permissions
   shell: chown -R {{ app_user }}:{{ app_user }} /{{ project_name }} && chmod -R 755 /{{ project_name }}/storage
