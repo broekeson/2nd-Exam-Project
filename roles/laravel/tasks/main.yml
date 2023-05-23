@@ -10,19 +10,26 @@
   shell: chmod +x /usr/local/bin/composer
 
 #Clone laravel
-- name: add laravel from github
-  shell: git clone https://github.com/f1amy/laravel-realworld-example-app.git {{ project_name }}/
-  become: true
-  become_user: "{{app_user}}"
-  become_method: sudo
+- name: create project directory
+  ansible.builtin.file:
+    path: "/{{ project_name }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: 0755
 
-- name: composer install
-  shell: composer install
-  become: true
-  become_user: "{{app_user}}"
-  become_method: sudo
+- name: Clone repo to project directory
+  ansible.builtin.git:
+    repo: https://github.com/f1amy/laravel-realworld-example-app.git
+    dest: "/{{ project_name }}"
+
+- name: Composer install
+  shell: composer install --no-dev --no-interaction
   args:
-    chdir: "{{project_name}}"
+    chdir: "/{{ project_name }}"
+  become: true
+  become_user: "{{ app_user }}"
+  become_method: sudo
 
 - name: change permissions
   shell: chown -R {{ app_user }}:{{ app_user }} /{{ project_name }} && chmod -R 755 /{{ project_name }}/storage
