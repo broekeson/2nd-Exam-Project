@@ -30,7 +30,7 @@
   become_method: sudo
 
 - name: change permissions
-  shell: chown -R {{ app_user }}:{{ app_user }} / {{ project_name }} && chmod -R 755 /{{ project_name }}/storage
+  shell: chown -R {{ app_user }}:{{ app_user }} {{ project_name }} && chmod -R 755 {{ project_name }}/storage
 
 #Copy .env and .htaccess files
 - name: copy .env file
