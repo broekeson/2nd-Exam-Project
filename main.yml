@@ -7,7 +7,7 @@
     - packages
     - apache
     - php
-    - laravel
     - mysql
+    - laravel
     - certbot
     - postgres
