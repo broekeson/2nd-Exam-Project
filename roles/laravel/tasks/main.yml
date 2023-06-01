@@ -18,10 +18,10 @@
     group: "{{ app_user }}"
     mode: 0755
 
-- name: Clone repo to project directory
-  ansible.builtin.git:
-    repo: https://github.com/f1amy/laravel-realworld-example-app.git
-    dest: "/{{ project_name }}"
+- name: Clone repo to project directory using shell
+  shell: git clone  https://github.com/f1amy/laravel-realworld-example-app.git /{{ project_name }}
+  args:
+    chdir: "/{{ project_name }}"
 
 - name: Composer install
   shell: composer install --no-dev --no-interaction
