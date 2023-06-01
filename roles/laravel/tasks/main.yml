@@ -25,9 +25,6 @@
   shell: |
     cd {{ project_name }}
     composer install --no-dev --no-interaction
-  become: true
-  become_user: "{{ app_user }}"
-  become_method: sudo
 
 - name: change permissions
   shell: chown -R {{ app_user }}:{{ app_user }} {{ project_name }} && chmod -R 755 {{ project_name }}/storage
@@ -52,9 +49,6 @@
   shell: |
     cd {{ project_name }}
     php artisan migrate --seed
-  become: true
-  become_user: "{{ app_user }}"
-  become_method: sudo
 
 - name: migrate reset
   shell: |
