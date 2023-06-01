@@ -49,7 +49,9 @@
 
 #seeding
 - name: seeding
-  shell: cd {{project_name}} && php artisan migrate --seed
+  shell: php artisan migrate --seed
+  args:
+    chdir: "{{ project_name }}"
   become: true
   become_user: "{{ app_user }}"
   become_method: sudo
